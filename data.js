@@ -3,7 +3,7 @@ window.DATA = {
   today: '2026-10-20',
   asOf: '20.10.2026',
   me: { name: 'Антон', role: 'Продюсер' },
-  show: { name: 'Вписка', yt: '2,4 млн подписчиков', vk: '610 тыс подписчиков' },
+  show: { name: 'Вписка', yt: '2,83 млн подписчиков', vk: '610 тыс подписчиков' },
 
   shares: [
     { key: 'host', name: 'Ведущий', pct: 35 },
@@ -38,13 +38,18 @@ window.DATA = {
 
   // стадии выпуска: идея → согласован → снято → монтаж → согласование → вышел
   episodes: [
-    { num: 206, guest: 'Лера Нова', who: 'певица', shoot: '2026-08-18', release: '2026-08-27', city: 'Санкт-Петербург', place: 'Студия на Марата', stage: 'вышел', views: { yt: 1840000, vk: 420000 }, slots: [{ kind: 'Преролл', deal: 'd1' }, { kind: 'Интеграция', deal: 'd2' }, { kind: 'Мидролл', deal: null }], trip: null, folder: 'Архив/2026/206_Нова', onSet: ['makar', 'dasha', 'ilya'], hue: ['#C8A2FF', '#5E2BB8'] },
-    { num: 207, guest: 'Марк Левин', who: 'стендап-комик', shoot: '2026-08-25', release: '2026-09-03', city: 'Санкт-Петербург', place: 'Студия на Марата', stage: 'вышел', views: { yt: 1210000, vk: 310000 }, slots: [{ kind: 'Преролл', deal: 'd3' }, { kind: 'Интеграция', deal: 'd4' }, { kind: 'Мидролл', deal: 'd5' }], trip: null, folder: 'Архив/2026/207_Левин', onSet: ['makar', 'dasha', 'ilya'], hue: ['#FFC48A', '#D9542A'] },
-    { num: 208, guest: 'Группа «Юг»', who: 'музыканты', shoot: '2026-09-01', release: '2026-09-10', city: 'Казань', place: 'Лофт «Фабрика»', stage: 'вышел', views: { yt: 2600000, vk: 640000 }, slots: [{ kind: 'Преролл', deal: 'd6' }, { kind: 'Интеграция', deal: 'd7' }, { kind: 'Мидролл', deal: null }], trip: 't3', folder: 'Архив/2026/208_Юг', onSet: ['makar', 'dasha'], hue: ['#9FE6C8', '#1C7A5A'] },
-    { num: 209, guest: 'Тимур Сагдеев', who: 'стример', shoot: '2026-09-08', release: '2026-09-17', city: 'Санкт-Петербург', place: 'Студия на Марата', stage: 'вышел', views: { yt: 3100000, vk: 890000 }, slots: [{ kind: 'Преролл', deal: 'd8' }, { kind: 'Интеграция', deal: 'd9' }, { kind: 'Мидролл', deal: 'd10' }], trip: null, folder: 'Архив/2026/209_Сагдеев', onSet: ['makar', 'dasha', 'ilya'], hue: ['#8FD3FF', '#1E5BB8'] },
-    { num: 210, guest: 'Анна Белова', who: 'актриса', shoot: '2026-09-15', release: '2026-09-24', city: 'Санкт-Петербург', place: 'Студия на Марата', stage: 'вышел', views: { yt: 980000, vk: 260000 }, slots: [{ kind: 'Преролл', deal: 'd11' }, { kind: 'Интеграция', deal: 'd12' }, { kind: 'Мидролл', deal: null }], trip: null, folder: 'Архив/2026/210_Белова', onSet: ['makar', 'dasha', 'ilya'], hue: ['#FFB3C7', '#B8325E'] },
-    { num: 211, guest: 'Денис Рой', who: 'рэпер', shoot: '2026-09-22', release: '2026-10-01', city: 'Москва', place: 'Лофт на Бауманской', stage: 'вышел', views: { yt: 2200000, vk: 700000 }, slots: [{ kind: 'Преролл', deal: 'd13' }, { kind: 'Интеграция', deal: 'd14' }, { kind: 'Мидролл', deal: 'd15' }], trip: 't4', folder: 'Архив/2026/211_Рой', onSet: ['makar', 'dasha'], hue: ['#D7D7DC', '#3A3A44'] },
-    { num: 212, guest: 'Кира Данилова', who: 'блогер', shoot: '2026-09-29', release: '2026-10-08', city: 'Санкт-Петербург', place: 'Студия на Марата', stage: 'вышел', views: { yt: 1500000, vk: 410000 }, slots: [{ kind: 'Преролл', deal: 'd16' }, { kind: 'Интеграция', deal: 'd17' }, { kind: 'Мидролл', deal: null }], trip: null, folder: 'Архив/2026/212_Данилова', onSet: ['makar', 'dasha', 'ilya'], hue: ['#FFE08A', '#C27A12'] },
+    { num: 201, guest: "Дмитрий Журавлев", who: "блогер", shoot: '2025-11-30', release: '2025-12-09', city: "Москва", place: "Студия «Вписки»", stage: 'вышел', views: { yt: 3706277, vk: null }, slots: [{ kind: 'Преролл', deal: null }, { kind: 'Интеграция', deal: null }, { kind: 'Мидролл', deal: null }], trip: null, folder: "Архив/2026/201_Дмитрий", onSet: ['makar', 'dasha', 'ilya'], hue: ['#9FE6C8', '#1C7A5A'], yt: { id: 'RTCNxkA0Iqk', title: "Дмитрий Журавлев — о закрытии Натальной Карты, флирте с Иванченко и детстве в деревне" } },
+    { num: 202, guest: "Давидыч", who: "блогер", shoot: '2025-12-14', release: '2025-12-23', city: "Москва", place: "Студия «Вписки»", stage: 'вышел', views: { yt: 2448090, vk: null }, slots: [{ kind: 'Преролл', deal: null }, { kind: 'Интеграция', deal: null }, { kind: 'Мидролл', deal: null }], trip: null, folder: "Архив/2026/202_Давидыч", onSet: ['makar', 'dasha', 'ilya'], hue: ['#FFC48A', '#D9542A'], yt: { id: '2JlyQedIvg8', title: "Давидыч – русско-китайский автопром, развод из-за измены, тюрьма и ответ на хейт" } },
+    { num: 203, guest: "Ваня Дмитриенко", who: "певец", shoot: '2026-02-14', release: '2026-02-23', city: "Москва", place: "Студия «Вписки»", stage: 'вышел', views: { yt: 1985460, vk: null }, slots: [{ kind: 'Преролл', deal: null }, { kind: 'Интеграция', deal: null }, { kind: 'Мидролл', deal: null }], trip: null, folder: "Архив/2026/203_Ваня", onSet: ['makar', 'dasha', 'ilya'], hue: ['#C8A2FF', '#5E2BB8'], yt: { id: '3IkbCSx5phI', title: "Ваня Дмитриенко — про помощь Сатиру, хейт Пересильд, билеты за 800к и новый дом" } },
+    { num: 204, guest: "Asata Boroda", who: "блогер", shoot: '2026-02-19', release: '2026-02-28', city: "Москва", place: "Студия «Вписки»", stage: 'вышел', views: { yt: 2746812, vk: null }, slots: [{ kind: 'Преролл', deal: null }, { kind: 'Интеграция', deal: null }, { kind: 'Мидролл', deal: null }], trip: null, folder: "Архив/2026/204_Asata", onSet: ['makar', 'dasha', 'ilya'], hue: ['#A9F0D1', '#1C8A6E'], yt: { id: '1qJGtm1AV5Q', title: "ASATA BORODA — ответ Давидычу, обзор на дом, хейт из-за Нивы и развод с женой" } },
+    { num: 205, guest: "Toxi$", who: "рэпер", shoot: '2026-03-22', release: '2026-03-31', city: "Москва", place: "Студия «Вписки»", stage: 'вышел', views: { yt: 3952330, vk: null }, slots: [{ kind: 'Преролл', deal: null }, { kind: 'Интеграция', deal: null }, { kind: 'Мидролл', deal: null }], trip: null, folder: "Архив/2026/205_Toxi$", onSet: ['makar', 'dasha', 'ilya'], hue: ['#FFE08A', '#C27A12'], yt: { id: 'ngNl_XaIOs8', title: "Toxi$ — о меме «возьми телефон», расставании с Генсухой и пересадке волос [ft. OG Buda]" } },
+    { num: 206, guest: "Импровизаторы", who: "Шастун, Попов, Позов, Матвиенко", shoot: '2026-04-19', release: '2026-04-28', city: "Москва", place: "Студия «Вписки»", stage: 'вышел', views: { yt: 4005668, vk: null }, slots: [{ kind: 'Преролл', deal: 'd1' }, { kind: 'Интеграция', deal: 'd2' }, { kind: 'Мидролл', deal: null }], trip: null, folder: "Архив/2026/206_Импровизаторы", onSet: ['makar', 'dasha', 'ilya'], hue: ['#D7D7DC', '#3A3A44'], yt: { id: '7IJay3n2Vtw', title: "Импровизаторы — как живут: Шастун, Попов, Позов и Матвиенко" } },
+    { num: 207, guest: "Арман Царукян", who: "боец UFC", shoot: '2026-06-05', release: '2026-06-14', city: "Москва", place: "Студия «Вписки»", stage: 'вышел', views: { yt: 3796395, vk: null }, slots: [{ kind: 'Преролл', deal: 'd3' }, { kind: 'Интеграция', deal: 'd4' }, { kind: 'Мидролл', deal: 'd5' }], trip: null, folder: "Архив/2026/207_Арман", onSet: ['makar', 'dasha', 'ilya'], hue: ['#FFB3C7', '#B8325E'], yt: { id: '0riUQCUJJT8', title: "Arman Tsarukyan — How to Become a UFC Star. Nina Drama, Chimaev’s fight, Topuria" } },
+    { num: 208, guest: "Данила Поперечный*", who: "стендап-комик", shoot: '2026-06-19', release: '2026-06-28', city: "Москва", place: "Студия «Вписки»", stage: 'вышел', views: { yt: 5786439, vk: null }, slots: [{ kind: 'Преролл', deal: 'd6' }, { kind: 'Интеграция', deal: 'd7' }, { kind: 'Мидролл', deal: null }], trip: null, folder: "Архив/2026/208_Данила", onSet: ['makar', 'dasha', 'ilya'], hue: ['#8FD3FF', '#1E5BB8'], yt: { id: 'QMe1iZEqSUI', title: "Данила Поперечный* – о жизни в Америке, ребенке, отмене Егора Крида и распаде Кликклак" } },
+    { num: 209, guest: "9mice", who: "музыкант", shoot: '2026-07-14', release: '2026-07-23', city: "Москва", place: "Студия «Вписки»", stage: 'вышел', views: { yt: 2712374, vk: null }, slots: [{ kind: 'Преролл', deal: 'd8' }, { kind: 'Интеграция', deal: 'd9' }, { kind: 'Мидролл', deal: 'd10' }], trip: null, folder: "Архив/2026/209_9mice", onSet: ['makar', 'dasha', 'ilya'], hue: ['#9FE6C8', '#1C7A5A'], yt: { id: 'WN1uvUGbcmo', title: "9mice — жизнь после Viperr, конфликты, стиль, обвинения бывших девушек. Первое интервью" } },
+    { num: 210, guest: "Егорик", who: "блогер", shoot: '2026-08-02', release: '2026-08-12', city: "Казань", place: "Лофт «Фабрика»", stage: 'вышел', views: { yt: 3343454, vk: null }, slots: [{ kind: 'Преролл', deal: 'd11' }, { kind: 'Интеграция', deal: 'd12' }, { kind: 'Мидролл', deal: null }], trip: 't3', folder: "Архив/2026/210_Егорик", onSet: ['makar', 'dasha', 'ilya'], hue: ['#FFC48A', '#D9542A'], yt: { id: '7AdMkrfeTJQ', title: "Егорик – про встречу с Владом А4, хейт Масленникова, буллинг в школе" } },
+    { num: 211, guest: "madk1d, тёмный принц, FORTUNA 812", who: "музыканты", shoot: '2026-08-22', release: '2026-08-31', city: "Москва", place: "Студия «Вписки»", stage: 'вышел', views: { yt: 5393906, vk: null }, slots: [{ kind: 'Преролл', deal: 'd13' }, { kind: 'Интеграция', deal: 'd14' }, { kind: 'Мидролл', deal: 'd15' }], trip: null, folder: "Архив/2026/211_madk1d", onSet: ['makar', 'dasha', 'ilya'], hue: ['#C8A2FF', '#5E2BB8'], yt: { id: 'qP0fizk1zrE', title: "madk1d, тёмный принц, FORTUNA 812 – как живут звёзды поколения саундклауда" } },
+    { num: 212, guest: "Матвей Сафонов", who: "футболист, вратарь ПСЖ", shoot: '2026-09-22', release: '2026-09-30', city: "Москва", place: "Студия «Вписки»", stage: 'вышел', views: { yt: 3092730, vk: null }, slots: [{ kind: 'Преролл', deal: 'd16' }, { kind: 'Интеграция', deal: 'd17' }, { kind: 'Мидролл', deal: null }], trip: 't4', folder: "Архив/2026/212_Матвей", onSet: ['makar', 'dasha', 'ilya'], hue: ['#4C6B7A', '#0D1A20'], yt: { id: 'mzccFLEI8Bs', title: "Матвей Сафонов — как живет главный футболист России и вратарь ПСЖ (FR/Eng subs)" } },
     { num: 213, guest: 'Павел Ветров', who: 'стример', shoot: '2026-10-13', release: '2026-10-22', city: 'Санкт-Петербург', place: 'Студия на Марата', stage: 'монтаж', views: null, slots: [{ kind: 'Преролл', deal: 'd18' }, { kind: 'Интеграция', deal: 'd19' }, { kind: 'Мидролл', deal: 'd20' }], trip: null, folder: 'Архив/2026/213_Ветров', onSet: ['makar', 'dasha', 'ilya'], hue: ['#A9F0D1', '#1C8A6E'] },
     { num: 214, guest: 'Артём Соколов', who: 'стример', shoot: '2026-10-20', release: '2026-10-29', city: 'Санкт-Петербург', place: 'Студия на Марата', stage: 'согласован', views: null, slots: [{ kind: 'Преролл', deal: 'd21' }, { kind: 'Интеграция', deal: 'd22' }, { kind: 'Мидролл', deal: null }], trip: null, folder: 'Архив/2026/214_Соколов', onSet: ['makar', 'dasha', 'ilya'], hue: ['#4C6B7A', '#0D1A20'] },
     { num: 215, guest: 'Влад Орлов', who: 'музыкант', shoot: '2026-10-21', release: '2026-11-05', city: 'Москва', place: 'Лофт на Бауманской', stage: 'согласован', views: null, slots: [{ kind: 'Преролл', deal: 'd24' }, { kind: 'Интеграция', deal: null }, { kind: 'Мидролл', deal: null }], trip: 't1', folder: 'Архив/2026/215_Орлов', onSet: ['makar', 'dasha'], hue: ['#C8A2FF', '#5E2BB8'] },
@@ -131,11 +136,9 @@ window.DATA = {
     { date: '2026-09-05', name: 'Елена Карпова · бухгалтерия за август', sum: -30000, cat: 'Команда', acc: 'a', person: 'elena' },
     { date: '2026-09-05', name: 'Сергей Лунёв · юрист за август', sum: -20000, cat: 'Команда', acc: 'a', person: 'sergey' },
     { date: '2026-09-04', name: '«Ласточка» · интеграция 208', sum: 1100000, cat: 'Реклама', acc: 'a', deal: 'd7' },
-    { date: '2026-09-03', name: 'Аренда лофта в Казани · 1 сентября', sum: -70000, cat: 'Студия', acc: 'b' },
     { date: '2026-09-02', name: 'Хранилище и сервисы · сентябрь', sum: -12400, cat: 'Сервисы', acc: 'a' },
     { date: '2026-09-01', name: '«Терра» · преролл 208', sum: 420000, cat: 'Реклама', acc: 'b', deal: 'd6' },
     { date: '2026-08-29', name: 'Макар Ильин · доля за 206–208', sum: -900000, cat: 'Команда', acc: 'a', person: 'makar' },
-    { date: '2026-08-28', name: 'Билеты в Казань · 31 августа – 2 сентября', sum: -24800, cat: 'Дорога', acc: 'b', trip: 't3' },
     { date: '2026-08-27', name: '«Фитмаркет» · мидролл 207', sum: 260000, cat: 'Реклама', acc: 'b', deal: 'd5' },
     { date: '2026-08-26', name: '«Полка» · интеграция 207', sum: 900000, cat: 'Реклама', acc: 'a', deal: 'd4' },
     { date: '2026-08-25', name: '«Монета» · преролл 207', sum: 360000, cat: 'Реклама', acc: 'a', deal: 'd3' },
@@ -143,7 +146,9 @@ window.DATA = {
     { date: '2026-08-19', name: 'Аренда студии на Марата · август', sum: -180000, cat: 'Студия', acc: 'a' },
     { date: '2026-08-18', name: '«Кьюб» · интеграция 206', sum: 950000, cat: 'Реклама', acc: 'a', deal: 'd2' },
     { date: '2026-08-17', name: '«Ласточка» · преролл 206', sum: 380000, cat: 'Реклама', acc: 'b', deal: 'd1' },
-    { date: '2026-08-14', name: 'Николай Хромов · монтаж 206–208', sum: -180000, cat: 'Команда', acc: 'b', person: 'nik' }
+    { date: '2026-08-14', name: 'Николай Хромов · монтаж 206–208', sum: -180000, cat: 'Команда', acc: 'b', person: 'nik' },
+    { date: '2026-08-04', name: 'Аренда лофта в Казани · 2 августа', sum: -70000, cat: 'Студия', acc: 'b' },
+    { date: '2026-07-29', name: 'Билеты в Казань · 1–3 августа', sum: -24800, cat: 'Дорога', acc: 'b', trip: 't3' }
   ],
 
   // документы: статус ЭДО — черновик, отправлен, ждёт нас, ждёт их, подписан, аннулирован; owner — чья задача (acc/law/prod/sales)
@@ -189,13 +194,13 @@ window.DATA = {
       { kind: 'отель', date: '2026-11-09', time: '14:00', route: 'Отель у Кремля', note: '3 номера, 2 ночи', who: 'вся группа', file: 'бронь_2026-11-09.pdf' },
       { kind: 'самолёт', date: '2026-11-11', time: '19:05', arr: '21:30', route: 'Казань → Санкт-Петербург', train: 'рейс 1297', car: '', seat: '14C', who: 'Антон', file: 'посадочный_2026-11-11.pdf' }
     ] },
-    { id: 't4', city: 'Москва', from: '2026-09-21', to: '2026-09-23', ep: 211, who: ['anton', 'makar', 'dasha'], legs: [
+    { id: 't4', city: 'Москва', from: '2026-09-21', to: '2026-09-23', ep: 212, who: ['anton', 'makar', 'dasha'], legs: [
       { kind: 'поезд', date: '2026-09-21', time: '21:40', arr: '06:05', route: 'Санкт-Петербург → Москва', train: '027А', car: '5', seat: '8', who: 'Антон', file: 'билет_2026-09-21_027А.pdf' },
       { kind: 'поезд', date: '2026-09-23', time: '17:10', arr: '21:05', route: 'Москва → Санкт-Петербург', train: '757А', car: '4', seat: '17', who: 'Антон', file: 'билет_2026-09-23_757А.pdf' }
     ] },
-    { id: 't3', city: 'Казань', from: '2026-08-31', to: '2026-09-02', ep: 208, who: ['anton', 'makar', 'dasha'], legs: [
-      { kind: 'самолёт', date: '2026-08-31', time: '08:20', arr: '10:45', route: 'Санкт-Петербург → Казань', train: 'рейс 1294', car: '', seat: '9F', who: 'Антон', file: 'посадочный_2026-08-31.pdf' },
-      { kind: 'самолёт', date: '2026-09-02', time: '19:05', arr: '21:30', route: 'Казань → Санкт-Петербург', train: 'рейс 1297', car: '', seat: '11A', who: 'Антон', file: 'посадочный_2026-09-02.pdf' }
+    { id: 't3', city: 'Казань', from: '2026-08-01', to: '2026-08-03', ep: 210, who: ['anton', 'makar', 'dasha'], legs: [
+      { kind: 'самолёт', date: '2026-08-01', time: '08:20', arr: '10:45', route: 'Санкт-Петербург → Казань', train: 'рейс 1294', car: '', seat: '9F', who: 'Антон', file: 'посадочный_2026-08-01.pdf' },
+      { kind: 'самолёт', date: '2026-08-03', time: '19:05', arr: '21:30', route: 'Казань → Санкт-Петербург', train: 'рейс 1297', car: '', seat: '11A', who: 'Антон', file: 'посадочный_2026-08-03.pdf' }
     ] }
   ],
 
@@ -213,7 +218,7 @@ window.DATA = {
     { id: 'e10', date: '2026-10-16', start: '19:00', end: '20:30', type: 'эфир', title: 'Прямой эфир во ВК', sub: 'ответы на вопросы · студия' },
     { id: 'e11', date: '2026-10-15', start: '11:00', end: '18:00', type: 'монтаж', title: 'Монтаж · выпуск 213', sub: 'Николай · разбор материала', ep: 213 },
     { id: 'e12', date: '2026-10-14', start: '10:00', end: '12:00', type: 'монтаж', title: 'Загрузка исходников 213 в архив', sub: 'Дарья · студия', ep: 213 },
-    { id: 'e13', date: '2026-10-09', start: '11:00', end: '17:00', type: 'монтаж', title: 'Монтаж · выпуск 212', sub: 'Николай · правки героя', ep: 212 },
+    { id: 'e13', date: '2026-10-09', start: '11:00', end: '15:00', type: 'монтаж', title: 'Субтитры и обложка · выпуск 212', sub: 'Николай · версия для ВК', ep: 212 },
     { id: 'e14', date: '2026-10-28', start: '16:00', end: '18:00', type: 'монтаж', title: 'Согласование монтажа 214 с героем', sub: 'Артём Соколов · онлайн', ep: 214 },
     { id: 'e15', date: '2026-11-06', start: '11:00', end: '18:00', type: 'монтаж', title: 'Монтаж · выпуск 215', sub: 'Николай · разбор материала', ep: 215 },
     { id: 'e16', date: '2026-11-30', start: '12:00', end: '12:30', type: 'дедлайн', title: 'Отчёт в ОРД за октябрь', sub: 'Сергей · все выпуски, вышедшие в октябре' },
