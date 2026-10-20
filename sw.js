@@ -1,6 +1,6 @@
 // Служебный работник прототипа «Вписка»: кладёт страницу и шрифты в кэш, чтобы приложение открывалось без сети,
 // а при наличии сети берёт свежую версию страницы и данных.
-const V = 'vpiska-20261020-1028';
+const V = 'vpiska-20261020-1037';
 const SHELL = ['./', 'index.html', 'data.js', 'manifest.webmanifest', 'icon-180.png', 'icon-512.png', 'fonts/fonts.css',
   'fonts/InterTight-400-cyrillic.woff2', 'fonts/InterTight-400-latin.woff2'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });

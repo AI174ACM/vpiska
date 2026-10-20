@@ -249,7 +249,28 @@ h2 a,.lnk{color:var(--t2);font-weight:500;cursor:pointer}
 .acc .chip{position:absolute;right:16px;bottom:16px;width:34px;height:24px;border-radius:6px;background:linear-gradient(135deg,#F2D28B,#C7A24A)}
 .toast{position:absolute;left:50%;bottom:calc(var(--sab) + 92px);transform:translateX(-50%) translateY(20px);z-index:9;background:var(--acc);color:#fff;font-size:13.5px;padding:10px 16px;border-radius:999px;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap}
 .toast.on{opacity:1;transform:translateX(-50%)}
-@media (prefers-reduced-motion: reduce){.screen{transition:none}}
+/* движение: панели поднимаются лесенкой, цифры набегают, столбики растут, нажатие сжимает */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(229,72,77,.45)}50%{box-shadow:0 0 0 7px rgba(229,72,77,0)}}
+.screen>.gl,.screen>.cover,.screen>.two,.screen>.chips,.screen>.facts,.screen>.acc,.screen>.ticket,.screen>.tl,.screen>.wk,.screen>.eps>.cover,.screen>h2,.screen>.seg,.screen>.why,.screen>.month{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+.screen>:nth-child(3){animation-delay:.03s}.screen>:nth-child(4){animation-delay:.06s}.screen>:nth-child(5){animation-delay:.09s}.screen>:nth-child(6){animation-delay:.12s}.screen>:nth-child(7){animation-delay:.15s}.screen>:nth-child(8){animation-delay:.18s}.screen>:nth-child(9){animation-delay:.21s}.screen>:nth-child(10){animation-delay:.24s}.screen>:nth-child(n+11){animation-delay:.27s}
+.eps>.cover:nth-child(2){animation-delay:.08s}.eps>.cover:nth-child(3){animation-delay:.16s}.eps>.cover:nth-child(n+4){animation-delay:.24s}
+.row,.cover,.gl.tap,.chips span,.task,.acc,.ticket,.kv[data-go],.wk b,.seg span,.tabbar b{transition:transform .14s ease,background .25s,color .25s}
+.row:active,.cover:active,.gl.tap:active,.chips span:active,.task:active,.acc:active,.ticket:active,.kv[data-go]:active{transform:scale(.985)}
+.tabbar b:active{transform:scale(.92)}
+.bar i{transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.task .cb.on{animation:pop .28s cubic-bezier(.2,.8,.2,1)}
+.tl .now::before{animation:pulse 2.2s infinite}
+.kv[data-go]{cursor:pointer}
+.kv[data-go] b::after{content:"›";color:var(--t3);margin-left:6px;font-weight:400}
+.why{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.2,.8,.2,1);margin:0 -2px;padding:0 2px}
+.why.on{max-height:420px}
+.big[data-toggle]{display:inline-flex;align-items:baseline;gap:2px}
+.big[data-toggle]::after{content:"";width:9px;height:9px;border-right:1.8px solid var(--t3);border-bottom:1.8px solid var(--t3);transform:translateY(-10px) rotate(45deg);margin-left:12px;transition:transform .3s}
+.big.open::after{transform:translateY(-4px) rotate(225deg)}
+.cnt{display:inline-block;min-width:1ch}
+@media (prefers-reduced-motion: reduce){.screen{transition:none}.screen>*,.eps>.cover{animation:none}.bar i{transition:none}.tl .now::before{animation:none}}
 </style>
 </head>
 <body>
@@ -316,6 +337,15 @@ const daysBetween=(a,b)=>Math.round((dt(b)-dt(a))/864e5);
 const TODAY=D.today;
 const cap=s=>s? s[0].toUpperCase()+s.slice(1):'';
 const lc1=s=>s? s[0].toLowerCase()+s.slice(1):'';
+const nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
+const cnt=n=>'<span class="cnt" data-n="'+Math.round(n)+'">'+fmtS(n)+'</span>';
+const SHARE_GO={host:'person/makar',sales:'person/olga',studio:'money',tax:'money'};
+function afterRender(el){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  el.querySelectorAll('.cnt[data-n]').forEach(c=>{const n=+c.dataset.n;if(!n)return;const t0=performance.now(),dur=700;const f=t=>{const k=Math.min(1,(t-t0)/dur);const e=1-Math.pow(1-k,3);c.textContent=fmtS(n*e);if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)});
+  el.querySelectorAll('[data-w]').forEach(b=>{b.style.width='0%';requestAnimationFrame(()=>requestAnimationFrame(()=>{b.style.width=b.dataset.w+'%'}))});
+  const now=el.querySelector('.tl .now');if(now){setTimeout(()=>{el.scrollTo({top:Math.max(0,now.getBoundingClientRect().top-el.getBoundingClientRect().top+el.scrollTop-230),behavior:'smooth'})},80)}
+}
 const rel=s=>{const n=daysBetween(TODAY,s);if(n===0)return 'сегодня';if(n===1)return 'завтра';if(n===-1)return 'вчера';if(n<0)return Math.abs(n)+' дн. назад';if(n<7)return 'через '+n+' дн.';return dlong(s)};
 
 // ——— справочники ———
@@ -331,8 +361,12 @@ const dealSt=s=>D.dealStages.indexOf(s);
 const active=d=>dealSt(d.stage)>=3&&d.stage!=='закрыто';
 const receivable=()=>D.deals.filter(d=>active(d)&&d.sum>d.paid);
 const recvSum=()=>receivable().reduce((s,d)=>s+d.sum-d.paid,0);
-const owed=()=>D.team.filter(t=>t.accrued>t.paid);
-const owedSum=()=>owed().reduce((s,t)=>s+t.accrued-t.paid,0);
+// начислено ведущему и продажам считается из сделок со стадии «вышло»; остальным — по данным
+const releasedDeals=()=>D.deals.filter(d=>dealSt(d.stage)>=6);
+const sharePct=g=>({host:35,sales:10}[g]||0);
+const accruedOf=t=>sharePct(t.group)?Math.round(releasedDeals().reduce((s,d)=>s+d.sum*sharePct(t.group)/100,0)):t.accrued;
+const owed=()=>D.team.filter(t=>accruedOf(t)>t.paid+1);
+const owedSum=()=>owed().reduce((s,t)=>s+accruedOf(t)-t.paid,0);
 const total=()=>D.accounts.reduce((s,a)=>s+a.balance,0);
 const free=()=>total()-owedSum()-D.taxReserve;
 const initials=n=>n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
@@ -401,7 +435,9 @@ function brief(){
 const chev='<span class="chev"><svg><use href="#i-chev"/></svg></span>';
 const icon=(id,bg,sq)=>'<span class="ic'+(sq?' sq':'')+'" style="background:'+bg+'"><svg><use href="#'+id+'"/></svg></span>';
 const stCls=s=>({'подписан':'ok','ждёт нас':'bad','ждёт их':'warn','черновик':'','отправлен':'info','аннулирован':'','получен':'ok','нужен':'bad','—':''}[s]||'');
-const evRow=e=>'<div class="row" data-go="ev/'+e.id+'"><span class="tm">'+(e.allDay?'весь<br>день':e.start)+'</span>'+icon(e.icon||TICON[e.type],TYPES[e.type])+'<span class="w"><b>'+esc(e.title)+'</b><small>'+esc(e.sub||'')+'</small></span>'+chev+'</div>';
+const evRow=(e,b)=>'<div class="row" data-go="ev/'+e.id+'"'+(b&&b.dim?' style="opacity:.55"':'')+'><span class="tm">'+(e.allDay?'весь<br>день':e.start)+'</span>'+icon(e.icon||TICON[e.type],TYPES[e.type])+'<span class="w"><b>'+esc(e.title)+'</b><small>'+esc(e.sub||'')+'</small></span>'+(b&&b.text?'<span class="r"><span class="st '+b.cls+'">'+b.text+'</span></span>':chev)+'</div>';
+// метка события относительно текущего времени: прошло · идёт · через N мин
+function evBadge(e,isNext){if(e.allDay)return null;const n=nowMin(),s=mins(e.start),en=mins(e.end||addMin(e.start,60));if(en<=n)return{dim:true};if(s<=n)return{cls:'ok',text:'идёт'};if(isNext){const m=s-n;return{cls:'info',text:m<60?'через '+m+' мин':m<180?'через '+Math.round(m/60)+' ч':''}}return null}
 const dealRow=d=>{const a=ADV(d.adv),e=EP[d.ep];return '<div class="row" data-go="deal/'+d.id+'"><span class="ic" style="background:'+a.color+'">'+'<b style="font:600 11px var(--f)">'+esc(initials(a.name.replace(/[«»]/g,'')))+'</b></span><span class="w"><b>'+esc(a.name)+' · '+d.kind.toLowerCase()+'</b><small>выпуск '+d.ep+' · '+esc(e.guest)+'</small></span><span class="r"><b class="num">'+fmt(d.sum)+'</b><small>'+esc(d.stage)+(d.sum>d.paid&&active(d)?' · ждём '+short(d.sum-d.paid):'')+'</small></span></div>'};
 const docRow=d=>'<div class="row" data-go="doc/'+d.id+'">'+icon('i-doc','#8A8A96',1)+'<span class="w"><b>'+esc(d.title)+'</b><small>'+esc(d.type)+' · '+esc(d.edo)+' · '+dshort(d.date)+'</small></span><span class="r"><span class="st '+stCls(d.status)+'">'+esc(d.status)+'</span></span></div>';
 const taskRow=t=>{const dn=isDone(t);const late=!dn&&t.due<TODAY;return '<div class="task'+(dn?' done':'')+'" data-task="'+t.id+'"><i class="g" style="background:'+gcolor(t.group)+'"></i><span class="cb'+(dn?' on':'')+'"></span><span class="w"><b>'+esc(t.title)+'</b><small>'+esc(D.groups[t.group])+(t.who?' · '+esc(TM[t.who].name.split(' ')[0]):'')+'</small></span><span class="due'+(late?' late':'')+'">'+(late?'просрочено':rel(t.due))+'</span></div>'};
@@ -420,10 +456,11 @@ S.home=()=>{
   const te=evOn(TODAY);
   const next=D.episodes.filter(e=>e.stage!=='вышел').sort((a,b)=>a.shoot<b.shoot?-1:1)[0];
   return '<div class="hdr"><span>'+dfull(TODAY)+'</span><span class="av" data-go="more">'+initials(D.me.name+' М')+'</span></div>'
-  +'<div class="big num" data-go="money">'+fmtS(total())+'<small>₽</small></div>'
-  +'<div class="cap" data-go="money"><i class="dot"></i>На счетах · сходится с банками</div>'
+  +'<div class="big num" data-toggle="why">'+cnt(total())+'<small>₽</small></div>'
+  +'<div class="cap" data-go="money"><i class="dot"></i>На счетах · сходится с банками · из чего — нажмите цифру</div>'
+  +'<div class="why"><div class="gl" style="margin-top:12px"><h3>Из чего складывается</h3>'+D.accounts.map(a=>'<div class="kv" data-go="money/acc/'+a.id+'"><span>'+esc(a.name)+' · '+esc(a.sub)+'</span><b class="num">'+fmt(a.balance)+'</b></div>').join('')+'<div class="kv"><span style="color:var(--t);font-weight:500">На счетах</span><b class="num">'+fmt(total())+'</b></div><div class="kv" data-go="money/owed"><span>К выплате команде</span><b class="num">− '+fmt(owedSum())+'</b></div><div class="kv" data-go="money"><span>Резерв на налоги</span><b class="num">− '+fmt(D.taxReserve)+'</b></div><div class="kv" data-go="money"><span style="color:var(--t);font-weight:500">Свободно</span><b class="num">'+fmt(free())+'</b></div></div></div>'
   +'<div class="two"><div class="gl tap" data-go="money/recv"><span>К получению</span><b class="num">'+short(recvSum())+' ₽</b><small>'+receivable().length+' '+plural(receivable().length,'сделка','сделки','сделок')+'</small></div><div class="gl tap" data-go="money/owed"><span>К выплате</span><b class="num">'+short(owedSum())+' ₽</b><small>команде · '+owed().length+' '+plural(owed().length,'человек','человека','человек')+'</small></div></div>'
-  +'<div class="gl"><h3>Сегодня <a class="lnk" data-go="cal">календарь</a></h3>'+(te.length?te.map(evRow).join(''):'<div class="note">Событий нет</div>')+'</div>'
+  +'<div class="gl"><h3>Сегодня <a class="lnk" data-go="cal">календарь</a></h3>'+(te.length?(()=>{let nextDone=false;return te.map(e=>{const b=evBadge(e,!nextDone);if(b&&b.text&&!nextDone&&b.cls==='info')nextDone=true;if(b&&b.cls==='ok')nextDone=true;return evRow(e,b)}).join('')})():'<div class="note">Событий нет</div>')+'</div>'
   +'<div class="chips">'+attention().map(a=>'<span data-go="'+a.go+'"><i class="'+a.cls+'"></i>'+a.text+'</span>').join('')+'</div>'
   +'<div class="gl"><h3>Коротко <span>по данным</span></h3><p class="brief">'+brief()+'</p></div>'
   +(next?'<h2>Ближайший выпуск</h2>'+coverCard(next):'');
@@ -439,7 +476,7 @@ S.cal=(p)=>{
   if(timed.length){
     tl='<div class="tl"><div class="hrs">'+[...Array(H1-H0)].map((_,i)=>'<div class="h"><span>'+String(H0+i).padStart(2,'0')+':00</span><i></i></div>').join('')
     +'<div class="evs">'+timed.map(e=>{const s=Math.max(mins(e.start),H0*60),en=Math.min(mins(e.end||addMin(e.start,60)),H1*60);const top=(s-H0*60)/60*HH,h=Math.max((en-s)/60*HH-4,22);return '<div class="ev'+(h<40?' short':'')+'" style="top:'+top+'px;height:'+h+'px;background:'+TYPES[e.type]+'" data-go="ev/'+e.id+'">'+esc(e.title)+'<small>'+esc(e.sub||'')+'</small></div>'}).join('')
-    +(day===TODAY?'<div class="now" style="top:'+((9*60+41-H0*60)/60*HH)+'px"></div>':'')+'</div></div></div>';
+    +(day===TODAY&&nowMin()>=H0*60&&nowMin()<=H1*60?'<div class="now" style="top:'+((nowMin()-H0*60)/60*HH)+'px"></div>':'')+'</div></div></div>';
   }else tl='<div class="tl"><div class="empty">В этот день ничего не запланировано</div></div>';
   const upcoming=allEvents().filter(e=>e.date>day&&e.date<=addDays(day,7));
   return '<h1>Календарь<small>'+dfull(day)+(day===TODAY?' · сегодня':'')+'</small></h1>'
@@ -492,6 +529,7 @@ S.ep=(num)=>{
   return coverCard(e,true)
   +'<div class="gl">'+stepper(D.epStages,e.stage,e.stage!=='вышел')+'</div>'
   +'<div class="facts"><div class="gl"><span>Съёмка</span><b>'+dlong(e.shoot)+'</b></div><div class="gl"><span>Выход</span><b>'+dlong(e.release)+'</b></div><div class="gl"><span>Где</span><b class="sm">'+esc(e.place)+', '+esc(e.city)+'</b></div><div class="gl"><span>Реклама в выпуске</span><b class="num">'+short(sold)+' ₽</b></div></div>'
+  +(sold?(()=>{const paidSum=e.slots.filter(s=>s.deal).reduce((x,s)=>x+DL[s.deal].paid,0);return '<h2>Экономика выпуска</h2><div class="gl" style="margin-top:0"><div class="kv" data-go="ads"><span>Продано рекламы</span><b class="num">'+fmt(sold)+'</b></div><div class="kv" data-go="money"><span>Пришло на счёт</span><b class="num">'+fmt(paidSum)+'</b></div>'+(sold>paidSum?'<div class="kv" data-go="money/recv"><span>Ждём от рекламодателей</span><b class="num">'+fmt(sold-paidSum)+'</b></div>':'')+D.shares.map(s=>'<div class="kv" data-go="'+SHARE_GO[s.key]+'"><span>'+esc(s.name)+' · '+s.pct+'%</span><b class="num">'+fmt(sold*s.pct/100)+'</b></div>').join('')+'<div class="note">Доли считаются от проданной рекламы; ведущему и продажам начисляется после выхода выпуска.</div></div>'})():'')
   +'<h2>Рекламные слоты <span>'+e.slots.filter(s=>s.deal).length+' из '+e.slots.length+'</span></h2><div class="gl" style="margin-top:0">'+e.slots.map(s=>s.deal?dealRow(DL[s.deal]):'<div class="row" data-go="ads"><span class="ic" style="background:rgba(0,0,0,.08);color:var(--t2)"><svg><use href="#i-mega"/></svg></span><span class="w"><b>'+esc(s.kind)+' · свободен</b><small>'+(s.kind==='Преролл'?'30 секунд в начале':s.kind==='Интеграция'?'90 секунд внутри разговора':'45 секунд в середине')+'</small></span><span class="r"><span class="st info">продать</span></span></div>').join('')+'</div>'
   +(e.views?'<h2>Просмотры</h2><div class="gl" style="margin-top:0"><div class="kv"><span>Ютуб</span><b class="num">'+fmtS(e.views.yt)+'</b></div>'+(e.views.vk!=null?'<div class="kv"><span>ВК Видео</span><b class="num">'+fmtS(e.views.vk)+'</b></div><div class="kv"><span>Всего</span><b class="num">'+fmtS(viewsOf(e))+'</b></div>':'<div class="note" style="margin-top:4px">Просмотры с Ютуба на 20.10.2026. Цифры ВК подтянутся, когда подключим площадку.</div>')+(e.yt?'<a class="yt" href="https://www.youtube.com/watch?v='+e.yt.id+'" target="_blank" rel="noopener"><i></i>Открыть на Ютубе</a>':'')+'</div>':'')
   +'<h2>Команда на площадке</h2><div class="gl" style="margin-top:0">'+e.onSet.map(i=>{const t=TM[i];return '<div class="row" data-go="person/'+t.id+'"><span class="av" style="background:'+t.color+';width:32px;height:32px;font-size:11px">'+initials(t.name)+'</span><span class="w"><b>'+esc(t.name)+'</b><small>'+esc(t.role)+'</small></span>'+chev+'</div>'}).join('')+'</div>'
@@ -508,7 +546,7 @@ S.ads=()=>{
   const closed=D.deals.filter(d=>d.stage==='закрыто').reduce((s,d)=>s+d.sum,0);
   const mx=Math.max(pipe,work,closed);
   return '<h1>Реклама<small>'+D.deals.length+' сделок за сезон · продажи ведёт '+esc(TM.olga.name)+'</small></h1>'
-  +'<div class="gl"><div class="cat"><span class="nm">В переговорах</span><span class="bar"><i style="width:'+(pipe/mx*100)+'%;background:var(--t3)"></i></span><b class="num">'+short(pipe)+' ₽</b></div><div class="cat"><span class="nm">В работе</span><span class="bar"><i style="width:'+(work/mx*100)+'%;background:var(--shoot)"></i></span><b class="num">'+short(work)+' ₽</b></div><div class="cat"><span class="nm">Закрыто</span><span class="bar"><i style="width:'+(closed/mx*100)+'%;background:var(--ok)"></i></span><b class="num">'+short(closed)+' ₽</b></div><div class="note">Ждём от рекламодателей '+short(recvSum())+' ₽. Нажмите на сделку: стадии, оплаты, доли, маркировка и документы.</div></div>'
+  +'<div class="gl"><div class="cat"><span class="nm">В переговорах</span><span class="bar"><i data-w="'+(pipe/mx*100)+'" style="width:'+(pipe/mx*100)+'%;background:var(--t3)"></i></span><b class="num">'+short(pipe)+' ₽</b></div><div class="cat"><span class="nm">В работе</span><span class="bar"><i data-w="'+(work/mx*100)+'" style="width:'+(work/mx*100)+'%;background:var(--shoot)"></i></span><b class="num">'+short(work)+' ₽</b></div><div class="cat"><span class="nm">Закрыто</span><span class="bar"><i data-w="'+(closed/mx*100)+'" style="width:'+(closed/mx*100)+'%;background:var(--ok)"></i></span><b class="num">'+short(closed)+' ₽</b></div><div class="note">Ждём от рекламодателей '+short(recvSum())+' ₽. Нажмите на сделку: стадии, оплаты, доли, маркировка и документы.</div></div>'
   +'<h2>Свободные слоты</h2><div class="gl" style="margin-top:0">'+D.episodes.filter(e=>e.stage!=='вышел'&&e.slots.some(s=>!s.deal)).map(e=>'<div class="row" data-go="ep/'+e.num+'">'+icon('i-play',e.hue[1])+'<span class="w"><b>Выпуск '+e.num+' · '+esc(e.guest)+'</b><small>'+e.slots.filter(s=>!s.deal).map(s=>s.kind.toLowerCase()).join(', ')+' · съёмка '+rel(e.shoot)+'</small></span>'+chev+'</div>').join('')+'</div>'
   +groups.map(([n,f])=>{const l=D.deals.filter(f).sort((a,b)=>b.ep-a.ep);return l.length?'<h2>'+n+' <span>'+l.length+'</span></h2><div class="gl" style="margin-top:0">'+l.map(dealRow).join('')+'</div>':''}).join('');
 };
@@ -519,37 +557,39 @@ S.deal=(id)=>{
   const rest=d.sum-d.paid;
   return '<div class="hdr"><span style="color:'+a.color+';font-weight:600">'+esc(a.name)+'</span><span>'+esc(a.what)+'</span></div>'
   +'<h1 style="margin-top:10px">'+esc(d.kind)+' в выпуске '+d.ep+'<small>'+esc(e.guest)+' · '+(e.stage==='вышел'?'вышел '+dlong(e.release):'выход '+dlong(e.release))+' · заявка от '+dshort(d.created)+'</small></h1>'
-  +'<div class="big num" style="margin-top:16px">'+fmtS(d.sum)+'<small>₽</small></div><div class="cap">'+(rest>0?'<i class="dot '+(active(d)?'warn':'')+'"></i>Оплачено '+short(d.paid)+' ₽ · остаток '+short(rest)+' ₽':'<i class="dot"></i>Оплачено полностью')+'</div>'
+  +'<div class="big num" style="margin-top:16px">'+cnt(d.sum)+'<small>₽</small></div><div class="cap">'+(rest>0?'<i class="dot '+(active(d)?'warn':'')+'"></i>Оплачено '+short(d.paid)+' ₽ · остаток '+short(rest)+' ₽'+(active(d)?' · ждём до '+dlong(addDays(e.release,5)):''):'<i class="dot"></i>Оплачено полностью')+'</div>'
   +'<div class="gl">'+stepper(D.dealStages,d.stage,d.stage!=='закрыто')+'</div>'
   +'<div class="two"><div class="gl"><span>Маркировка</span><b style="font-size:17px;color:'+(d.erid==='получен'?'var(--ok)':d.erid==='нужен'?'var(--bad)':'var(--t2)')+'">'+(d.erid==='получен'?'Токен получен':d.erid==='нужен'?'Нужен токен':'До съёмки не нужна')+'</b><small>'+(d.erid==='получен'?'ОРД · в отчёт за месяц выхода':d.erid==='нужен'?'до выхода выпуска '+rel(e.release):'оформляется после съёмки')+'</small></div><div class="gl"><span>Формат</span><b style="font-size:17px">'+esc(d.kind)+'</b><small>'+(d.kind==='Преролл'?'30 секунд в начале':d.kind==='Интеграция'?'90 секунд внутри разговора':'45 секунд в середине')+'</small></div></div>'
-  +'<h2>Как делится</h2><div class="gl" style="margin-top:0">'+D.shares.map(s=>'<div class="kv"><span>'+esc(s.name)+' · '+s.pct+'%</span><b class="num">'+fmt(d.sum*s.pct/100)+'</b></div>').join('')+'</div>'
+  +'<h2>Как делится</h2><div class="gl" style="margin-top:0">'+D.shares.map(s=>'<div class="kv" data-go="'+SHARE_GO[s.key]+'"><span>'+esc(s.name)+' · '+s.pct+'%'+(s.key==='host'?' · '+esc(TM.makar.name):s.key==='sales'?' · '+esc(TM.olga.name):'')+'</span><b class="num">'+fmt(d.sum*s.pct/100)+'</b></div>').join('')+'<div class="note">'+(dealSt(d.stage)>=6?'Выпуск вышел: доли ведущего и продаж начислены.':'Начислится после выхода выпуска '+dlong(e.release)+'.')+'</div></div>'
   +'<h2>Оплаты</h2><div class="gl" style="margin-top:0">'+(D.ops.filter(o=>o.deal===d.id).map(o=>'<div class="row" data-go="money/ops/'+o.date.slice(0,7)+'"><span class="tm">'+dshort(o.date)+'</span><span class="w"><b>'+esc(o.name)+'</b><small>'+esc(D.accounts.find(x=>x.id===o.acc).name)+'</small></span><span class="r"><b class="num plus">+'+fmt(o.sum)+'</b></span></div>').join('')||'<div class="note" style="margin-top:0">Оплат ещё не было</div>')+(rest>0&&active(d)?'<div class="kv" style="margin-top:6px"><span>Ждём</span><b class="num">'+fmt(rest)+'</b></div>':'')+'</div>'
   +'<h2>Выпуск</h2>'+coverCard(e)
   +(docs.length?'<h2>Документы</h2><div class="gl" style="margin-top:0">'+docs.map(docRow).join('')+'</div>':'')
   +(tasks.length?'<h2>Задачи</h2><div class="gl" style="margin-top:0">'+tasks.map(taskRow).join('')+'</div>':'');
 };
 
-S.money=(sub,arg)=>{
+S.money=(sub,arg,arg2)=>{
+  if(sub==='cat'){const cat=arg,m=arg2||TODAY.slice(0,7);const ops=D.ops.filter(o=>o.cat===cat&&o.date.slice(0,7)===m);const sum=ops.reduce((s,o)=>s+Math.abs(o.sum),0);return '<h1>'+esc(cat)+'<small>'+MN[+m.slice(5)-1]+' · '+ops.length+' '+plural(ops.length,'операция','операции','операций')+' · '+fmt(sum)+'</small></h1><div class="gl">'+ops.map(opRow).join('')+'</div>';}
   if(sub==='recv')return '<h1>К получению<small>'+receivable().length+' '+plural(receivable().length,'сделка','сделки','сделок')+' · '+fmt(recvSum())+'</small></h1><div class="gl">'+receivable().sort((a,b)=>EP[a.ep].release<EP[b.ep].release?-1:1).map(dealRow).join('')+'</div><div class="note">Остатки по сделкам со стадии «договор» до «отчёт». Сроки оплат — в договорах, напоминания — в календаре.</div>';
   if(sub==='owed')return '<h1>К выплате<small>команде · '+fmt(owedSum())+'</small></h1><div class="gl">'+owed().map(personRow).join('')+'</div><div class="note">Начислено по долям из закрытых сделок и за работу на площадке минус выплачено. Самозанятым после оплаты нужен чек.</div>';
   if(sub==='ops'){const m=arg||TODAY.slice(0,7);const months=[...new Set(D.ops.map(o=>o.date.slice(0,7)))].sort();const ops=D.ops.filter(o=>o.date.slice(0,7)===m);const inc=ops.filter(o=>o.sum>0).reduce((s,o)=>s+o.sum,0),exp=ops.filter(o=>o.sum<0).reduce((s,o)=>s-o.sum,0);
     const cats={};ops.filter(o=>o.sum<0).forEach(o=>cats[o.cat]=(cats[o.cat]||0)-o.sum);const cl=Object.entries(cats).sort((a,b)=>b[1]-a[1]);const mx=cl.length?cl[0][1]:1;
     return '<h1>Операции<small>'+MN[+m.slice(5)-1]+' '+m.slice(0,4)+'</small></h1><div class="month">'+months.map(x=>'<span class="'+(x===m?'on':'')+'" data-go="money/ops/'+x+'" data-replace="1">'+MN[+x.slice(5)-1].slice(0,3)+'</span>').join('')+'</div>'
     +'<div class="two"><div class="gl"><span>Пришло</span><b class="num plus">+'+short(inc)+' ₽</b></div><div class="gl"><span>Ушло</span><b class="num">−'+short(exp)+' ₽</b></div></div>'
-    +'<h2>Куда ушли</h2><div class="gl" style="margin-top:0">'+cl.map(([c,v])=>'<div class="cat"><span class="nm">'+esc(c)+'</span><span class="bar"><i style="width:'+(v/mx*100)+'%"></i></span><b class="num">'+fmt(v)+'</b></div>').join('')+'</div>'
+    +'<h2>Куда ушли <span>нажмите категорию</span></h2><div class="gl" style="margin-top:0">'+cl.map(([c,v])=>'<div class="cat row" style="padding:8px 0" data-go="money/cat/'+encodeURIComponent(c)+'/'+m+'"><span class="nm">'+esc(c)+'</span><span class="bar"><i data-w="'+(v/mx*100)+'" style="width:'+(v/mx*100)+'%"></i></span><b class="num">'+fmt(v)+'</b></div>').join('')+'</div>'
     +'<h2>Все операции <span>'+ops.length+'</span></h2><div class="gl" style="margin-top:0">'+ops.map(opRow).join('')+'</div>';}
   if(sub==='acc'){const a=D.accounts.find(x=>x.id===arg);const ops=D.ops.filter(o=>o.acc===a.id).slice(0,30);return '<h1>'+esc(a.name)+'<small>'+esc(a.sub)+' · по выписке на '+a.asOf+'</small></h1><div class="big num" style="margin-top:16px">'+fmtS(a.balance)+'<small>₽</small></div><div class="cap"><i class="dot"></i>Сходится с таблицей</div><h2>Операции</h2><div class="gl" style="margin-top:0">'+ops.map(opRow).join('')+'</div>';}
   const m=TODAY.slice(0,7);const ops=D.ops.filter(o=>o.date.slice(0,7)===m);const inc=ops.filter(o=>o.sum>0).reduce((s,o)=>s+o.sum,0),exp=ops.filter(o=>o.sum<0).reduce((s,o)=>s-o.sum,0);
   return '<h1>Деньги<small>по выпискам на '+D.asOf+'</small></h1>'
-  +'<div class="big num" style="margin-top:16px">'+fmtS(total())+'<small>₽</small></div><div class="cap"><i class="dot"></i>На счетах · сходится с банками</div>'
+  +'<div class="big num" style="margin-top:16px">'+cnt(total())+'<small>₽</small></div><div class="cap"><i class="dot"></i>На счетах · сходится с банками</div>'
   +D.accounts.map(a=>'<div class="acc" style="background:linear-gradient(135deg,'+a.hue[0]+','+a.hue[1]+')" data-go="money/acc/'+a.id+'"><small>'+esc(a.name)+'</small><small style="opacity:.65">'+esc(a.sub)+'</small><em>на '+a.asOf+'</em><b class="num">'+fmt(a.balance)+'</b><span class="chip"></span></div>').join('')
   +'<h2>Свободные деньги</h2><div class="gl" style="margin-top:0"><div class="kv"><span>На счетах</span><b class="num">'+fmt(total())+'</b></div><div class="kv"><span>К выплате команде</span><b class="num">− '+fmt(owedSum())+'</b></div><div class="kv"><span>Резерв на налоги</span><b class="num">− '+fmt(D.taxReserve)+'</b></div><div class="kv"><span style="color:var(--t);font-weight:500">Свободно</span><b class="num" style="font-size:17px">'+fmt(free())+'</b></div><div class="note">Ближайший налог: '+esc(lc1(D.nextTax.name))+' · '+dlong(D.nextTax.date)+' · '+fmt(D.nextTax.sum)+'</div></div>'
   +'<div class="two"><div class="gl tap" data-go="money/recv"><span>К получению</span><b class="num">'+short(recvSum())+' ₽</b><small>'+receivable().length+' '+plural(receivable().length,'сделка','сделки','сделок')+'</small></div><div class="gl tap" data-go="money/owed"><span>К выплате</span><b class="num">'+short(owedSum())+' ₽</b><small>'+owed().length+' '+plural(owed().length,'человек','человека','человек')+'</small></div></div>'
+  +(()=>{const rv=receivable();const mEnd=m+'-31';const soon=rv.filter(d=>EP[d.ep].release<=mEnd),later=rv.filter(d=>EP[d.ep].release>mEnd);const sum=l=>l.reduce((s,d)=>s+d.sum-d.paid,0);return '<h2>Ждём от рекламодателей <span>по датам выхода</span></h2><div class="gl" style="margin-top:0"><div class="kv" data-go="money/recv"><span>До конца '+MN[+m.slice(5)-1].toLowerCase().replace(/ь$/,'я').replace(/й$/,'я')+' · '+soon.length+' '+plural(soon.length,'сделка','сделки','сделок')+'</span><b class="num">'+fmt(sum(soon))+'</b></div><div class="kv" data-go="money/recv"><span>Позже · '+later.length+' '+plural(later.length,'сделка','сделки','сделок')+'</span><b class="num">'+fmt(sum(later))+'</b></div><div class="note">Остаток по сделке ждём в течение 5 дней после выхода выпуска, так записано в договорах.</div></div>'})()
   +'<h2>'+MN[+m.slice(5)-1]+' <a class="lnk" data-go="money/ops/'+m+'">все операции</a></h2><div class="gl" style="margin-top:0"><div class="kv"><span>Пришло</span><b class="num plus">+'+fmt(inc)+'</b></div><div class="kv"><span>Ушло</span><b class="num">− '+fmt(exp)+'</b></div></div>'
   +'<h2>Последние операции</h2><div class="gl" style="margin-top:0">'+D.ops.slice(0,8).map(opRow).join('')+'</div>';
 };
 const opRow=o=>{const go=o.deal?'deal/'+o.deal:o.person?'person/'+o.person:o.trip?'trip/'+o.trip:'';return '<div class="row"'+(go?' data-go="'+go+'"':'')+'><span class="tm">'+dshort(o.date)+'</span><span class="w"><b>'+esc(o.name)+'</b><small>'+esc(o.cat)+' · '+esc(D.accounts.find(x=>x.id===o.acc).name)+'</small></span><span class="r"><b class="num '+(o.sum>0?'plus':'minus')+'">'+(o.sum>0?'+':'−')+fmt(Math.abs(o.sum))+'</b></span></div>'};
-const personRow=t=>'<div class="row" data-go="person/'+t.id+'"><span class="av" style="background:'+t.color+';width:34px;height:34px;font-size:11px">'+initials(t.name)+'</span><span class="w"><b>'+esc(t.name)+'</b><small>'+esc(t.role)+' · '+esc(t.kind)+'</small></span><span class="r">'+(t.accrued>t.paid?'<b class="num">'+fmt(t.accrued-t.paid)+'</b><small>к выплате</small>':'<span class="st ok">рассчитан</span>')+'</span></div>';
+const personRow=t=>'<div class="row" data-go="person/'+t.id+'"><span class="av" style="background:'+t.color+';width:34px;height:34px;font-size:11px">'+initials(t.name)+'</span><span class="w"><b>'+esc(t.name)+'</b><small>'+esc(t.role)+' · '+esc(t.kind)+'</small></span><span class="r">'+(accruedOf(t)>t.paid+1?'<b class="num">'+fmt(accruedOf(t)-t.paid)+'</b><small>к выплате</small>':'<span class="st ok">рассчитан</span>')+'</span></div>';
 
 S.more=()=>{
   const items=[['money','i-wallet','Деньги','счета, операции, свободные деньги','#2B2B30'],['people','i-people','Люди','команда и кому сколько должны','#3D7BFF'],['docs','i-doc','Документы','архив и статусы подписи','#8A8A96'],['tasks','i-check','Задачи','по ролям: продакшн, продажи, бухгалтер, юрист','#2FA36B'],['trips','i-train','Поездки','билеты и брони','#1C7A5A'],['marking','i-tag','Маркировка','токены и отчёты в ОРД','#C98A1E'],['archive','i-folder','Архив','где лежат материалы выпусков','#8E5BE8'],['about','i-info','О прототипе','что это и как давать правки','#6E6E78']];
@@ -562,7 +602,8 @@ S.adv=(id)=>{const a=ADV(id);const ds=D.deals.filter(d=>d.adv===id).sort((x,y)=>
 
 S.person=(id)=>{const t=TM[id];if(!t)return '<h1>Не найден</h1>';const ops=D.ops.filter(o=>o.person===id);const docs=D.docs.filter(d=>d.person===id);const tasks=D.tasks.filter(x=>x.who===id&&!isDone(x));const eps=D.episodes.filter(e=>e.onSet.includes(id)&&e.stage!=='идея').sort((a,b)=>b.num-a.num);
   return '<div class="hdr"><span class="av" style="background:'+t.color+';width:56px;height:56px;font-size:18px">'+initials(t.name)+'</span></div><h1 style="margin-top:12px">'+esc(t.name)+'<small>'+esc(t.role)+' · '+esc(t.kind)+' · '+esc(D.groups[t.group])+'</small></h1>'
-  +(t.accrued?'<div class="facts"><div class="gl"><span>Начислено</span><b class="num">'+short(t.accrued)+' ₽</b></div><div class="gl"><span>Выплачено</span><b class="num">'+short(t.paid)+' ₽</b></div><div class="gl" style="grid-column:span 2"><span>К выплате</span><b class="num" style="color:'+(t.accrued>t.paid?'var(--warn)':'var(--ok)')+'">'+fmt(t.accrued-t.paid)+'</b></div></div>':'')
+  +(accruedOf(t)?'<div class="facts"><div class="gl"><span>Начислено</span><b class="num">'+short(accruedOf(t))+' ₽</b></div><div class="gl"><span>Выплачено</span><b class="num">'+short(t.paid)+' ₽</b></div><div class="gl" style="grid-column:span 2"><span>К выплате</span><b class="num" style="color:'+(accruedOf(t)>t.paid+1?'var(--warn)':'var(--ok)')+'">'+fmt(Math.max(0,accruedOf(t)-t.paid))+'</b></div></div>':'')
+  +(sharePct(t.group)?'<h2>Из чего начислено <span>'+sharePct(t.group)+'% от рекламы в вышедших выпусках</span></h2><div class="gl" style="margin-top:0">'+releasedDeals().sort((a,b)=>b.ep-a.ep).map(d=>{const a=ADV(d.adv);return '<div class="row" data-go="deal/'+d.id+'"><span class="ic" style="background:'+a.color+'"><b style="font:600 11px var(--f)">'+esc(initials(a.name.replace(/[«»]/g,'')))+'</b></span><span class="w"><b>'+esc(a.name)+' · '+d.kind.toLowerCase()+'</b><small>выпуск '+d.ep+' · '+esc(EP[d.ep].guest)+' · сделка '+short(d.sum)+' ₽</small></span><span class="r"><b class="num">'+fmt(d.sum*sharePct(t.group)/100)+'</b></span></div>'}).join('')+'</div>':'')
   +(ops.length?'<h2>Выплаты</h2><div class="gl" style="margin-top:0">'+ops.map(opRow).join('')+'</div>':'')
   +(docs.length?'<h2>Документы</h2><div class="gl" style="margin-top:0">'+docs.map(docRow).join('')+'</div>':'')
   +(tasks.length?'<h2>Задачи</h2><div class="gl" style="margin-top:0">'+tasks.map(taskRow).join('')+'</div>':'')
@@ -643,10 +684,10 @@ let nav={tab:'home',stacks:{home:['home'],cal:['cal'],eps:['eps'],ads:['ads'],mo
 try{const s=JSON.parse(localStorage.getItem('vp_nav')||'null');if(s&&s.ts&&Date.now()-s.ts<12*3600e3&&s.nav&&s.nav.stacks)nav=s.nav}catch(e){}
 const stage=$('#stage');
 const wraps={};
-TABS.forEach(t=>{const w=document.createElement('div');w.className='tabwrap';w.dataset.tab=t;stage.appendChild(w);wraps[t]=w});
+TABS.forEach(t=>{const w=document.createElement('div');w.className='tabwrap';w.dataset.wrap=t;stage.appendChild(w);wraps[t]=w});
 function save(){try{localStorage.setItem('vp_nav',JSON.stringify({ts:Date.now(),nav}))}catch(e){}}
 function render(route){const [name,...args]=route.split('/');const f=S[name];return f?f(...args.map(decodeURIComponent)):'<h1>Нет такого экрана</h1>'}
-function makeScreen(route,isSub){const el=document.createElement('div');el.className='screen'+(isSub?' sub':'');el.dataset.route=route;el.innerHTML=(isSub?'<div class="mesh2"></div><span class="back" data-back="1"><svg><use href="#i-left"/></svg></span>':'')+render(route);return el}
+function makeScreen(route,isSub){const el=document.createElement('div');el.className='screen'+(isSub?' sub':'');el.dataset.route=route;el.innerHTML=(isSub?'<div class="mesh2"></div><span class="back" data-back="1"><svg><use href="#i-left"/></svg></span>':'')+render(route);setTimeout(()=>afterRender(el),0);return el}
 function buildTab(t){const w=wraps[t];w.innerHTML='';const st=nav.stacks[t];st.forEach((r,i)=>{const el=makeScreen(r,i>0);if(i<st.length-1)el.classList.add('under','hid');w.appendChild(el)})}
 function showTab(t){nav.tab=t;TABS.forEach(x=>wraps[x].classList.toggle('on',x===t));document.querySelectorAll('#tabbar b').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));save()}
 function go(route,replace){const t=nav.tab;const w=wraps[t];const st=nav.stacks[t];
@@ -658,10 +699,11 @@ function rerender(){const t=nav.tab;const w=wraps[t];const el=w.lastElementChild
 let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),3200)}
 
 document.addEventListener('click',e=>{
-  const tb=e.target.closest('[data-tab]');if(tb){const t=tb.dataset.tab;if(t===nav.tab){const st=nav.stacks[t];if(st.length>1){nav.stacks[t]=[st[0]];buildTab(t)}else wraps[t].lastElementChild.scrollTo({top:0,behavior:'smooth'})}showTab(t);return}
+  const tb=e.target.closest('#tabbar [data-tab]');if(tb){const t=tb.dataset.tab;if(t===nav.tab){const st=nav.stacks[t];if(st.length>1){nav.stacks[t]=[st[0]];buildTab(t)}else wraps[t].lastElementChild.scrollTo({top:0,behavior:'smooth'})}showTab(t);return}
   const bk=e.target.closest('[data-back]');if(bk){back();return}
   const tk=e.target.closest('[data-task]');if(tk){const id=tk.dataset.task;const t=D.tasks.find(x=>x.id===id);done[id]=!isDone(t);try{localStorage.setItem('vp_done',JSON.stringify(done))}catch(x){}rerender();return}
   const ts=e.target.closest('[data-toast]');if(ts){toast(ts.dataset.toast);return}
+  const tg=e.target.closest('[data-toggle]');if(tg){const sc=tg.closest('.screen');const w=sc&&sc.querySelector('.'+tg.dataset.toggle);if(w){w.classList.toggle('on');tg.classList.toggle('open',w.classList.contains('on'))}return}
   const g=e.target.closest('[data-go]');if(g){e.stopPropagation();go(g.dataset.go,g.dataset.replace==='1');return}
 });
 // свайп от левого края — назад

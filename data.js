@@ -14,11 +14,11 @@ window.DATA = {
 
   team: [
     { id: 'anton', name: 'Антон', role: 'Продюсер, руководитель', kind: 'ИП', group: 'prod', accrued: 0, paid: 0, color: '#2B2B30' },
-    { id: 'makar', name: 'Макар Ильин', role: 'Ведущий', kind: 'ИП', group: 'host', accrued: 3150000, paid: 2900000, color: '#3D7BFF' },
+    { id: 'makar', name: 'Макар Ильин', role: 'Ведущий', kind: 'ИП', group: 'host', accrued: 3899000, paid: 3649000, color: '#3D7BFF' },
     { id: 'nik', name: 'Николай Хромов', role: 'Монтажёр', kind: 'самозанятый', group: 'prod', accrued: 480000, paid: 420000, color: '#8E5BE8' },
     { id: 'dasha', name: 'Дарья Светлова', role: 'Оператор', kind: 'самозанятая', group: 'prod', accrued: 240000, paid: 210000, color: '#F08A3C' },
     { id: 'ilya', name: 'Илья Берёзов', role: 'Звук', kind: 'самозанятый', group: 'prod', accrued: 180000, paid: 180000, color: '#2FA36B' },
-    { id: 'olga', name: 'Ольга Мирова', role: 'Продажи рекламы', kind: 'штат', group: 'sales', accrued: 900000, paid: 820000, color: '#E0457B' },
+    { id: 'olga', name: 'Ольга Мирова', role: 'Продажи рекламы', kind: 'штат', group: 'sales', accrued: 1114000, paid: 1034000, color: '#E0457B' },
     { id: 'elena', name: 'Елена Карпова', role: 'Бухгалтер', kind: 'по договору', group: 'acc', accrued: 90000, paid: 90000, color: '#1FA7B8' },
     { id: 'sergey', name: 'Сергей Лунёв', role: 'Юрист', kind: 'по договору', group: 'law', accrued: 60000, paid: 60000, color: '#C98A1E' }
   ],
